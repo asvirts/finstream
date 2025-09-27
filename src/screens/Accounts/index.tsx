@@ -4,7 +4,8 @@ import {
   View,
   FlatList,
   Alert,
-  TouchableOpacity
+  TouchableOpacity,
+  ScrollView
 } from "react-native"
 import {
   Text,

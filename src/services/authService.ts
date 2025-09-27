@@ -1,4 +1,6 @@
-import { supabase } from "./supabase"
+// Mock authentication service for development
+// In a real app, this would integrate with your authentication provider
+
 import { User } from "../types"
 
 interface LoginCredentials {
@@ -19,18 +21,29 @@ interface AuthResponse {
   user: User
 }
 
+// Mock user for development
+const MOCK_USER: User = {
+  id: "mock-user-id",
+  email: "user@example.com",
+  firstName: "John",
+  lastName: "Doe",
+  isOnboarded: true,
+}
+
+// Mock token
+const MOCK_TOKEN = "mock-jwt-token"
+
 // Authenticate user with email and password
 export const login = async ({
   email,
   password,
 }: LoginCredentials): Promise<AuthResponse> => {
-  const { data: session, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
-  if (error || !session) throw error
-  const user = session.user as User
-  return { token: session.access_token, user }
+  // Mock implementation
+  console.log("Mock login:", email)
+  return {
+    token: MOCK_TOKEN,
+    user: { ...MOCK_USER, email }
+  }
 }
 
 // Register a new user
@@ -41,49 +54,41 @@ export const register = async ({
   lastName,
   businessName,
 }: RegisterData): Promise<AuthResponse> => {
-  const { data: session, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: { data: { firstName, lastName, businessName } },
-  })
-  if (error || !session) throw error
-  const user = session.user as User
-  return { token: session.access_token, user }
+  // Mock implementation
+  console.log("Mock register:", email, firstName, lastName)
+  return {
+    token: MOCK_TOKEN,
+    user: { ...MOCK_USER, email, firstName, lastName }
+  }
 }
 
 // Get the current authenticated user
-export const getCurrentUser = (): User | null => {
-  return supabase.auth
-    .getUser()
-    .then(({ data: { user } }) => user as User | null)
+export const getCurrentUser = (): Promise<User | null> => {
+  // Mock implementation - return user if "logged in"
+  return Promise.resolve(MOCK_USER)
 }
 
 // Log out the current user
 export const logout = async (): Promise<void> => {
-  const { error } = await supabase.auth.signOut()
-  if (error) throw error
+  // Mock implementation
+  console.log("Mock logout")
 }
 
 // Complete the onboarding process for the user
 export const completeOnboarding = async (
   data: Partial<User>
 ): Promise<User> => {
-  const user = (await supabase.auth.getUser()).data.user
-  const { data: updated, error } = await supabase
-    .from<User>("users")
-    .update({ ...data, isOnboarded: true })
-    .eq("id", user?.id)
-    .single()
-  if (error || !updated) throw error
-  return updated
+  // Mock implementation
+  console.log("Mock complete onboarding:", data)
+  return { ...MOCK_USER, ...data, isOnboarded: true }
 }
 
 // Request a password reset email
 export const forgotPassword = async (
   email: string
 ): Promise<{ message: string }> => {
-  const { error } = await supabase.auth.resetPasswordForEmail(email)
-  if (error) throw error
+  // Mock implementation
+  console.log("Mock forgot password:", email)
   return { message: "Password reset email sent" }
 }
 
@@ -92,13 +97,8 @@ export const resetPassword = async (
   token: string,
   newPassword: string
 ): Promise<{ message: string }> => {
-  const { data, error } = await supabase.auth.updateUser(
-    {
-      password: newPassword,
-    },
-    { token }
-  )
-  if (error) throw error
+  // Mock implementation
+  console.log("Mock reset password with token:", token)
   return { message: "Password has been reset" }
 }
 
@@ -107,17 +107,14 @@ export const changePassword = async (
   currentPassword: string,
   newPassword: string
 ): Promise<{ message: string }> => {
-  // Supabase does not verify current password; rely on session
-  const { error } = await supabase.auth.updateUser({ password: newPassword })
-  if (error) throw error
+  // Mock implementation
+  console.log("Mock change password")
   return { message: "Password changed" }
 }
 
 // Update the current user's profile
 export const updateProfile = async (data: Partial<User>): Promise<User> => {
-  const { data: updated, error } = await supabase.auth.updateUser({
-    data: { ...data },
-  })
-  if (error || !updated.user) throw error
-  return updated.user as User
+  // Mock implementation
+  console.log("Mock update profile:", data)
+  return { ...MOCK_USER, ...data }
 }

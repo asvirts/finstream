@@ -23,12 +23,6 @@ import {
   InvoiceState,
   InvoiceAction
 } from "./reducers/invoiceReducer"
-import {
-  bankReducer,
-  initialBankState,
-  BankState,
-  BankAction
-} from "./reducers/bankReducer"
 
 // Define the global app state interface that combines all state slices
 export interface AppState {
@@ -36,7 +30,6 @@ export interface AppState {
   account: AccountState
   transaction: TransactionState
   invoice: InvoiceState
-  bank: BankState
 }
 
 // Define the app action types as a union of all possible actions
@@ -45,7 +38,6 @@ export type AppAction =
   | AccountAction
   | TransactionAction
   | InvoiceAction
-  | BankAction
 
 // Define a separate type for dispatch that accepts any action
 export type AppDispatch = (action: AppAction) => void
@@ -55,8 +47,7 @@ const initialAppState: AppState = {
   auth: initialAuthState,
   account: initialAccountState,
   transaction: initialTransactionState,
-  invoice: initialInvoiceState,
-  bank: initialBankState
+  invoice: initialInvoiceState
 }
 
 // Create the app context with initial values
@@ -77,8 +68,7 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
       state.transaction,
       action as TransactionAction
     ),
-    invoice: invoiceReducer(state.invoice, action as InvoiceAction),
-    bank: bankReducer(state.bank, action as BankAction)
+    invoice: invoiceReducer(state.invoice, action as InvoiceAction)
   }
 }
 
@@ -129,7 +119,3 @@ export const useInvoices = () => {
   return { invoiceState: state.invoice, dispatch }
 }
 
-export const useBankAccounts = () => {
-  const { state, dispatch } = useAppContext()
-  return { bankState: state.bank, dispatch }
-}

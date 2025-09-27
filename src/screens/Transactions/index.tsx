@@ -19,7 +19,7 @@ import {
   Button
 } from "react-native-paper"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
-import { useNavigation } from "@react-navigation/native"
+// import { useNavigation } from "@react-navigation/native"
 import { useTransactions } from "../../context/AppContext"
 import { Transaction } from "../../types"
 import { formatCurrency } from "../../utils/currencyUtils"
@@ -36,7 +36,7 @@ import {
 
 const TransactionsScreen = () => {
   const { transactionState, dispatch } = useTransactions()
-  const navigation = useNavigation()
+  // const navigation = useNavigation()
   const [searchQuery, setSearchQuery] = useState("")
   const [dateFilter, setDateFilter] = useState<
     "all" | "today" | "week" | "month" | "custom"
@@ -145,7 +145,8 @@ const TransactionsScreen = () => {
   }
 
   const handleTransactionPress = (transaction: Transaction) => {
-    navigation.navigate("TransactionDetail", { transactionId: transaction.id })
+    // TODO: Create transaction detail screen
+    console.log("Transaction pressed:", transaction.id)
   }
 
   const handleTransactionLongPress = (transaction: Transaction) => {

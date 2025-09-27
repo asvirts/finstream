@@ -13,6 +13,7 @@ export default function TabLayout() {
 
   return (
     <Tabs
+      initialRouteName="dashboard"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: true,
@@ -27,16 +28,6 @@ export default function TabLayout() {
         })
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          headerTitle: "Finstream",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
-          )
-        }}
-      />
       <Tabs.Screen
         name="dashboard"
         options={{
@@ -80,15 +71,6 @@ export default function TabLayout() {
           title: "Receipts",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="camera.fill" color={color} />
-          )
-        }}
-      />
-      <Tabs.Screen
-        name="bank"
-        options={{
-          title: "Bank",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="building.columns.fill" color={color} />
           )
         }}
       />

@@ -20,15 +20,15 @@ import {
   Badge
 } from "react-native-paper"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
-import { useNavigation } from "@react-navigation/native"
+import { router } from "expo-router"
 import { useInvoices } from "../../context/AppContext"
 import { Invoice, InvoiceStatus } from "../../types"
+import { InvoiceActionTypes } from "../../context/reducers/invoiceReducer"
 import { formatCurrency } from "../../utils/currencyUtils"
 import { format, isAfter, isBefore, parseISO, subDays } from "date-fns"
 
 const InvoicesScreen = () => {
   const { invoiceState, dispatch } = useInvoices()
-  const navigation = useNavigation()
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<InvoiceStatus | "ALL">("ALL")
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
@@ -36,13 +36,13 @@ const InvoicesScreen = () => {
 
   useEffect(() => {
     // In a real app, this would fetch invoices from an API
-    dispatch({ type: "FETCH_INVOICES_REQUEST" })
+    dispatch({ type: InvoiceActionTypes.FETCH_INVOICES_REQUEST })
 
     // Simulate API call with mock data
     setTimeout(() => {
       const mockInvoices = generateMockInvoices()
       dispatch({
-        type: "FETCH_INVOICES_SUCCESS",
+        type: InvoiceActionTypes.FETCH_INVOICES_SUCCESS,
         payload: mockInvoices
       })
     }, 1000)
@@ -184,7 +184,10 @@ const InvoicesScreen = () => {
   }
 
   const handleInvoicePress = (invoice: Invoice) => {
-    navigation.navigate("InvoiceDetail", { invoiceId: invoice.id })
+    router.push({
+      pathname: "/invoice-detail",
+      params: { invoiceId: invoice.id }
+    })
   }
 
   const handleInvoiceLongPress = (invoice: Invoice) => {
@@ -195,7 +198,10 @@ const InvoicesScreen = () => {
   const handleEdit = () => {
     setActionMenuVisible(false)
     if (selectedInvoice) {
-      navigation.navigate("EditInvoice", { invoiceId: selectedInvoice.id })
+      router.push({
+        pathname: "/invoice-form",
+        params: { invoiceId: selectedInvoice.id }
+      })
     }
   }
 
@@ -203,12 +209,12 @@ const InvoicesScreen = () => {
     setActionMenuVisible(false)
     if (selectedInvoice) {
       // In a real app, this would call an API to delete the invoice
-      dispatch({ type: "DELETE_INVOICE_REQUEST" })
+      dispatch({ type: InvoiceActionTypes.DELETE_INVOICE_REQUEST })
 
       // Simulate API call
       setTimeout(() => {
         dispatch({
-          type: "DELETE_INVOICE_SUCCESS",
+          type: InvoiceActionTypes.DELETE_INVOICE_SUCCESS,
           payload: selectedInvoice.id
         })
       }, 500)
@@ -218,19 +224,16 @@ const InvoicesScreen = () => {
   const handleRecordPayment = () => {
     setActionMenuVisible(false)
     if (selectedInvoice) {
-      navigation.navigate("RecordPayment", {
-        invoiceId: selectedInvoice.id,
-        invoiceTotal: selectedInvoice.total,
-        amountPaid: selectedInvoice.amountPaid
-      })
+      // TODO: Create record payment screen
+      console.log("Record payment for invoice:", selectedInvoice.id)
     }
   }
 
   const handleSendInvoice = () => {
     setActionMenuVisible(false)
     if (selectedInvoice) {
-      // In a real app, this would call an API to email the invoice
-      navigation.navigate("SendInvoice", { invoiceId: selectedInvoice.id })
+      // TODO: Create send invoice screen
+      console.log("Send invoice:", selectedInvoice.id)
     }
   }
 
@@ -431,7 +434,7 @@ const InvoicesScreen = () => {
       <FAB
         style={styles.fab}
         icon="plus"
-        onPress={() => navigation.navigate("NewInvoice")}
+        onPress={() => router.push("/invoice-form")}
         label="New Invoice"
       />
 

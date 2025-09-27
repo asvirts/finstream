@@ -1,34 +1,76 @@
-import { supabase } from "./supabase"
+// Mock account service for development
 import { Account, AccountType, AccountSubtype } from "../types"
+
+// Mock data
+const MOCK_ACCOUNTS: Account[] = [
+  {
+    id: "acc1",
+    name: "Business Checking",
+    type: AccountType.ASSET,
+    subtype: AccountSubtype.BANK,
+    balance: 15420.50,
+    isArchived: false,
+    description: "Main business checking account",
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-15"),
+  },
+  {
+    id: "acc2",
+    name: "Accounts Receivable",
+    type: AccountType.ASSET,
+    subtype: AccountSubtype.ACCOUNTS_RECEIVABLE,
+    balance: 8500.00,
+    isArchived: false,
+    description: "Outstanding customer invoices",
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-10"),
+  },
+  {
+    id: "acc3",
+    name: "Office Supplies",
+    type: AccountType.EXPENSE,
+    subtype: AccountSubtype.OPERATING_EXPENSE,
+    balance: 250.00,
+    isArchived: false,
+    description: "Office supplies and materials",
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-05"),
+  }
+]
 
 // Get all accounts
 export const getAccounts = async (): Promise<Account[]> => {
-  const { data, error } = await supabase.from<Account>("accounts").select("*")
-  if (error) throw error
-  return data || []
+  console.log("Mock: Getting all accounts")
+  return MOCK_ACCOUNTS.filter(acc => !acc.isArchived)
 }
 
 // Get a specific account by ID
 export const getAccountById = async (id: string): Promise<Account> => {
-  const { data, error } = await supabase
-    .from<Account>("accounts")
-    .select("*")
-    .eq("id", id)
-    .single()
-  if (error) throw error
-  return data!
+  console.log("Mock: Getting account by ID", id)
+  const account = MOCK_ACCOUNTS.find(acc => acc.id === id)
+  if (!account) {
+    throw new Error("Account not found")
+  }
+  return account
 }
 
 // Create a new account
 export const createAccount = async (
   accountData: Partial<Account>
 ): Promise<Account> => {
-  const { data, error } = await supabase
-    .from<Account>("accounts")
-    .insert(accountData)
-    .single()
-  if (error) throw error
-  return data!
+  console.log("Mock: Creating account", accountData)
+  const newAccount: Account = {
+    id: `acc_${Date.now()}`,
+    name: accountData.name || '',
+    type: accountData.type || AccountType.ASSET,
+    subtype: accountData.subtype || AccountSubtype.OTHER_ASSET,
+    balance: accountData.balance || 0,
+    isArchived: false,
+    description: accountData.description,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+  return newAccount
 }
 
 // Update an existing account
@@ -36,44 +78,32 @@ export const updateAccount = async (
   id: string,
   accountData: Partial<Account>
 ): Promise<Account> => {
-  const { data, error } = await supabase
-    .from<Account>("accounts")
-    .update(accountData)
-    .eq("id", id)
-    .single()
-  if (error) throw error
-  return data!
+  console.log("Mock: Updating account", id, accountData)
+  const existingAccount = await getAccountById(id)
+  return {
+    ...existingAccount,
+    ...accountData,
+    updatedAt: new Date(),
+  }
 }
 
 // Delete an account
 export const deleteAccount = async (id: string): Promise<void> => {
-  const { error } = await supabase
-    .from<Account>("accounts")
-    .delete()
-    .eq("id", id)
-  if (error) throw error
+  console.log("Mock: Deleting account", id)
 }
 
 // Archive an account
 export const archiveAccount = async (id: string): Promise<Account> => {
-  const { data, error } = await supabase
-    .from<Account>("accounts")
-    .update({ isArchived: true })
-    .eq("id", id)
-    .single()
-  if (error) throw error
-  return data!
+  console.log("Mock: Archiving account", id)
+  const account = await getAccountById(id)
+  return { ...account, isArchived: true, updatedAt: new Date() }
 }
 
 // Restore an archived account
 export const restoreAccount = async (id: string): Promise<Account> => {
-  const { data, error } = await supabase
-    .from<Account>("accounts")
-    .update({ isArchived: false })
-    .eq("id", id)
-    .single()
-  if (error) throw error
-  return data!
+  console.log("Mock: Restoring account", id)
+  const account = await getAccountById(id)
+  return { ...account, isArchived: false, updatedAt: new Date() }
 }
 
 // Get all account types with their subtypes
@@ -117,12 +147,8 @@ export const getAccountTypes = async (): Promise<{
 export const getAccountsByType = async (
   type: AccountType
 ): Promise<Account[]> => {
-  const { data, error } = await supabase
-    .from<Account>("accounts")
-    .select("*")
-    .eq("type", type)
-  if (error) throw error
-  return data || []
+  console.log("Mock: Getting accounts by type", type)
+  return MOCK_ACCOUNTS.filter(acc => acc.type === type && !acc.isArchived)
 }
 
 // Get chart of accounts summary with balances
@@ -133,10 +159,7 @@ export const getChartOfAccountsSummary = async (): Promise<{
   income: number
   expenses: number
 }> => {
-  const { data, error } = await supabase
-    .from<Account>("accounts")
-    .select("type, balance")
-  if (error) throw error
+  console.log("Mock: Getting chart of accounts summary")
   const summary = {
     assets: 0,
     liabilities: 0,
@@ -144,7 +167,9 @@ export const getChartOfAccountsSummary = async (): Promise<{
     income: 0,
     expenses: 0,
   }
-  data?.forEach((acc) => {
+
+  MOCK_ACCOUNTS.forEach((acc) => {
+    if (acc.isArchived) return
     switch (acc.type) {
       case AccountType.ASSET:
         summary.assets += acc.balance

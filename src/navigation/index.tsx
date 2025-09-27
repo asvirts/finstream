@@ -21,11 +21,15 @@ import { getAuthToken } from "../services/api"
 // import BankConnection from '../screens/Onboarding/BankConnection';
 // import OnboardingComplete from '../screens/Onboarding/OnboardingComplete';
 
+// Import actual screens
+import InvoicesScreen from "../screens/Invoices"
+import InvoiceDetailScreen from "../screens/Invoices/InvoiceDetail"
+import InvoiceFormScreen from "../screens/Invoices/InvoiceForm"
+
 // Main screens - placeholders until implementation
 const DashboardScreen = () => <></>
 const AccountsScreen = () => <></>
 const TransactionsScreen = () => <></>
-const InvoicesScreen = () => <></>
 const MoreScreen = () => <></>
 
 // Define stacks
@@ -64,6 +68,45 @@ const OnboardingStack = () => {
   )
 }
 
+// Invoice Stack
+const InvoiceStack = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: true
+      }}
+    >
+      <Stack.Screen
+        name="InvoicesList"
+        component={InvoicesScreen}
+        options={{ title: "Invoices" }}
+      />
+      <Stack.Screen
+        name="InvoiceDetail"
+        component={InvoiceDetailScreen}
+        options={{ title: "Invoice Details" }}
+      />
+      <Stack.Screen
+        name="InvoiceForm"
+        component={InvoiceFormScreen}
+        options={({ route }) => ({
+          title: (route.params as any)?.invoiceId ? "Edit Invoice" : "New Invoice"
+        })}
+      />
+      <Stack.Screen
+        name="NewInvoice"
+        component={InvoiceFormScreen}
+        options={{ title: "New Invoice" }}
+      />
+      <Stack.Screen
+        name="EditInvoice"
+        component={InvoiceFormScreen}
+        options={{ title: "Edit Invoice" }}
+      />
+    </Stack.Navigator>
+  )
+}
+
 // Main Tab Navigation
 const MainTabs = () => {
   return (
@@ -92,7 +135,7 @@ const MainTabs = () => {
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
       <Tab.Screen name="Accounts" component={AccountsScreen} />
       <Tab.Screen name="Transactions" component={TransactionsScreen} />
-      <Tab.Screen name="Invoices" component={InvoicesScreen} />
+      <Tab.Screen name="Invoices" component={InvoiceStack} options={{ headerShown: false }} />
       <Tab.Screen name="More" component={MoreScreen} />
     </Tab.Navigator>
   )

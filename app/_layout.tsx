@@ -5,8 +5,11 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import { ConvexReactClient } from 'convex/react';
+import { ConvexProvider } from 'convex/react';
 import { AppProvider } from '@/src/context/AppContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { convex } from '@/src/services/convex';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -28,14 +31,16 @@ export default function RootLayout() {
   }
 
   return (
-    <AppProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </AppProvider>
+    <ConvexProvider client={convex}>
+      <AppProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </AppProvider>
+    </ConvexProvider>
   );
 }
